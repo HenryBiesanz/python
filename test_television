@@ -1,0 +1,82 @@
+import pytest
+from television import Television
+
+def test_init():
+    tv = Television()
+    assert not tv._Television__status
+    assert not tv._Television__muted
+    assert tv._Television__volume == tv.MIN_VOLUME
+    assert tv._Television__channel == tv.MIN_CHANNEL
+
+def test_power():
+    tv = Television()
+    assert not tv._Television__status
+    tv.power()
+    assert tv._Television__status
+    tv.power()
+    assert not tv._Television__status
+
+def test_mute():
+    tv = Television()
+    tv.mute()
+    assert not tv._Television__muted
+    tv.power()
+    tv.mute()
+    assert tv._Television__muted
+    tv.mute()
+    assert not tv._Television__muted
+
+def test_channel_up():
+    tv = Television()
+    tv.channel_up()
+    assert tv._Television__channel == tv.MIN_CHANNEL
+    tv.power()
+    tv.channel_up()
+    assert tv._Television__channel == tv.MIN_CHANNEL + 1
+    tv._Television__channel = tv.MAX_CHANNEL
+    tv.channel_up()
+    assert tv._Television__channel == tv.MIN_CHANNEL
+
+def test_channel_down():
+    tv = Television()
+    tv.channel_down()
+    assert tv._Television__channel == tv.MIN_CHANNEL
+    tv.power()
+    tv.channel_down()
+    assert tv._Television__channel == tv.MAX_CHANNEL
+    tv._Television__channel = tv.MIN_CHANNEL
+    tv.channel_down()
+    assert tv._Television__channel == tv.MAX_CHANNEL
+
+def test_volume_up():
+    tv = Television()
+    tv.volume_up()
+    assert tv._Television__volume == tv.MIN_VOLUME
+    tv.power()
+    tv.volume_up()
+    assert tv._Television__volume == tv.MIN_VOLUME + 1
+    tv._Television__volume = tv.MAX_VOLUME
+    tv.volume_up()
+    assert tv._Television__volume == tv.MAX_VOLUME
+    tv.mute()
+    assert tv._Television__muted
+    tv.volume_up()
+    assert not tv._Television__muted
+    assert tv._Television__volume == tv.MAX_VOLUME
+
+def test_volume_down():
+    tv = Television()
+    tv.volume_down()
+    assert tv._Television__volume == tv.MIN_VOLUME
+    tv.power()
+    tv._Television__volume = tv.MAX_VOLUME
+    tv.volume_down()
+    assert tv._Television__volume == tv.MAX_VOLUME - 1
+    tv._Television__volume = tv.MIN_VOLUME
+    tv.volume_down()
+    assert tv._Television__volume == tv.MIN_VOLUME
+    tv.mute()
+    assert tv._Television__muted
+    tv.volume_down()
+    assert not tv._Television__muted
+    assert tv._Television__volume == tv.MIN_VOLUME
